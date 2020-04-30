@@ -48,6 +48,7 @@ class ValueIterationAgent(ValueEstimationAgent):
         "*** YOUR CODE HERE ***"
         for state in self.mdp.getStates(): #get all the states
             self.values[state] = 0.0
+            
         for i in range(self.iterations):
             print "Rreeee"
             states = mdp.getStates()
