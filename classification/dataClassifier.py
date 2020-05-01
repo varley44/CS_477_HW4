@@ -72,13 +72,40 @@ def enhancedFeatureExtractorDigit(datum):
     for this datum (datum is of type samples.Datum).
 
     ## DESCRIBE YOUR ENHANCED FEATURES HERE...
-
+    Uses search algorithm to find spaces of white
     ##
     """
     features =  basicFeatureExtractorDigit(datum)
 
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    a = datum.getPixels()
+
+    whitequeue = util.Queue()
+    whitespace = util.Counter()
+    whitecount = 0
+    xavg = 0
+    yavg = 0
+    pixsum = 0
+    for x in range(DIGIT_DATUM_WIDTH):
+        for y in range(DIGIT_DATUM_HEIGHT):
+            if datum.getPixel(x,y) == 0 and whitespace[(x,y)] == 0:
+                whitequeue.push((x,y))
+                while not whitequeue.isEmpty():
+                    a,b = whitequeue.pop()
+                    if whitespace[(a,b)] == 1:
+                        continue
+                    whitespace[(a,b)] = 1
+                    if a-1 > -1 and datum.getPixel(a-1, b) == 0 and whitespace[(a-1, b)] == 0:
+                        whitequeue.push((a-1, b))
+                    if a+1 < DIGIT_DATUM_WIDTH and datum.getPixel(a+1, b) == 0 and whitespace[(a+1, b)] == 0:
+                        whitequeue.push((a+1, b))
+                    if b-1 > -1 and datum.getPixel(a, b-1) == 0 and whitespace[(a, b-1)] == 0:
+                        whitequeue.push((a, b-1))
+                    if b+1 < DIGIT_DATUM_HEIGHT and datum.getPixel(a, b+1) == 0 and whitespace[(a, b+1)] == 0:
+                        whitequeue.push((a, b+1))
+                whitecount += 1
+
+    features['whitecount'] = int(whitecount > 1)
 
     return features
 
