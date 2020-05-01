@@ -25,7 +25,7 @@ class ValueIterationAgent(ValueEstimationAgent):
         for a given number of iterations using the supplied
         discount factor.
     """
-    def __init__(self, mdp, discount = 0.9, iterations = 100):
+    def __init__(self, mdp, discount=0.9, iterations=100):
         """
           Your value iteration agent should take an mdp on
           construction, run the indicated number of iterations
@@ -42,17 +42,14 @@ class ValueIterationAgent(ValueEstimationAgent):
         self.discount = discount
         self.iterations = iterations
         self.values = util.Counter() # A Counter is a dict with default 0
-        self.actions = util.Counter()
+        self.copyval = util.Counter()
 
         # Write value iteration code here
         "*** YOUR CODE HERE ***"
-        for state in self.mdp.getStates(): #get all the states
-            self.values[state] = 0.0
-            
         for i in range(self.iterations):
-            print "Rreeee"
+            self.copyval = self.values.copy()
             states = mdp.getStates()
-            for state in state:
+            for state in states:
                 if mdp.isTerminal(state):
                     continue
                 acts = mdp.getPossibleActions(state)
@@ -61,8 +58,8 @@ class ValueIterationAgent(ValueEstimationAgent):
                     val = self.computeQValueFromValues(state,act)
                     if maxval is None or maxval < val:
                         maxval = val
-                        self.actions[state] = act
-                self.values[state] = maxval
+                self.copyval[state] = maxval
+            self.values = self.copyval
 
 
 
@@ -86,7 +83,7 @@ class ValueIterationAgent(ValueEstimationAgent):
         for pair in pairs:
             nstate = pair[0]
             prob = pair[1]
-            sum += prob * (self.mdp.getReward(state,action,nstate) + (self.discount * self.values[state]))
+            sum += prob * (self.mdp.getReward(state,action,nstate) + (self.discount * self.values[nstate]))
         return sum
 
 
@@ -101,7 +98,18 @@ class ValueIterationAgent(ValueEstimationAgent):
           terminal state, you should return None.
         """
         "*** YOUR CODE HERE ***"
-        return self.actions[state]
+        if self.mdp.isTerminal(state):
+            return None
+        maxval = None
+        acts = self.mdp.getPossibleActions(state)
+        action = None
+        for act in acts:
+            val = self.computeQValueFromValues(state, act)
+            if maxval is None or maxval < val:
+                maxval = val
+                action = act
+        return action
+
 
     def getPolicy(self, state):
         return self.computeActionFromValues(state)
